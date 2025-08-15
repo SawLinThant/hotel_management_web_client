@@ -4,7 +4,7 @@ export const defaultLocale = 'en';
 export type Locale = typeof locales[number];
 
 // API Base URL - Update this to your backend URL
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {

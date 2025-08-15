@@ -245,4 +245,7 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
       )}
     </div>
   );
-} 
+}
+
+
+

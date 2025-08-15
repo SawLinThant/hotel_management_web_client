@@ -48,4 +48,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const dict = await getDictionary(locale);
 
   return <HomePageTemplate dict={dict} />;
-} 
+}
+
+
+

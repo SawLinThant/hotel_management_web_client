@@ -33,4 +33,7 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
       </div>
     </div>
   );
-} 
+}
+
+
+

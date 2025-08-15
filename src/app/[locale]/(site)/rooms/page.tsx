@@ -30,4 +30,7 @@ export default async function RoomsPage({ params, searchParams }: RoomsPageProps
       />
     </div>
   );
-} 
+}
+
+
+
