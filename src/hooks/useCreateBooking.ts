@@ -16,7 +16,15 @@ export function useCreateBooking() {
   } = useSWRMutation(
     API_ENDPOINTS.CREATE_BOOKING,
     async (url: string, { arg }: { arg: CreateBookingPayload }) => {
-      return bookingService.createBooking(arg);
+      console.log('useCreateBooking: Calling bookingService.createBooking with:', arg);
+      try {
+        const result = await bookingService.createBooking(arg);
+        console.log('useCreateBooking: Booking service returned:', result);
+        return result;
+      } catch (err) {
+        console.error('useCreateBooking: Booking service error:', err);
+        throw err;
+      }
     }
   );
 

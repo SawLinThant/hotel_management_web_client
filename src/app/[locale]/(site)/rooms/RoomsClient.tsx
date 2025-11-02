@@ -70,7 +70,7 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
     <div className="space-y-6">
       {/* Search and Filters */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <form onSubmit={handleSearch} className="flex gap-4 mb-4">
+        <form onSubmit={handleSearch} className="flex gap-4 mb-4 text-black">
           <div className="flex-1">
             <input
               type="text"
@@ -93,7 +93,7 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
           <select
             value={filters.type || ''}
             onChange={(e) => handleFilterChange({ type: e.target.value as any || undefined })}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">{dict.rooms.room_type}</option>
             <option value="single">{dict.rooms.single}</option>
@@ -105,7 +105,7 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
           <select
             value={filters.status || ''}
             onChange={(e) => handleFilterChange({ status: e.target.value as any || undefined })}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Status</option>
             <option value="available">{dict.rooms.available}</option>
@@ -118,7 +118,7 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
             placeholder="Min Capacity"
             value={filters.min_capacity || ''}
             onChange={(e) => handleFilterChange({ min_capacity: parseInt(e.target.value) || undefined })}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
 
           <button
@@ -144,8 +144,20 @@ export default function RoomsClient({ locale, dict, initialSearchParams }: Rooms
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((room) => (
               <div key={room.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">Room Image</span>
+                <div className="h-48 bg-gray-200 overflow-hidden relative">
+                  {room.images && room.images.length > 0 ? (
+                    <img
+                      src={room.images[0]}
+                      alt={`Room ${room.room_number}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">

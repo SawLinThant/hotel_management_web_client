@@ -18,12 +18,37 @@ import type {
 export const userService = {
   // Authentication
   async login(credentials: LoginPayload): Promise<AuthResponse> {
-    const response = await apiClient.post(API_ENDPOINTS.LOGIN, credentials);
+    // Use the role-specific endpoint if role is provided
+    // Otherwise use the generic endpoint
+    const endpoint = credentials.role === 'guest' 
+      ? '/auth/guest/login'
+      : credentials.role === 'staff'
+      ? '/auth/staff/login'
+      : credentials.role === 'admin'
+      ? '/auth/admin/login'
+      : API_ENDPOINTS.LOGIN;
+
+    // Remove role from payload for role-specific endpoints (they don't need it)
+    const payload = endpoint !== API_ENDPOINTS.LOGIN 
+      ? { email: credentials.email, password: credentials.password }
+      : credentials;
+
+    console.log('userService.login: Calling endpoint:', endpoint);
+    console.log('userService.login: Payload:', { ...payload, password: '***' });
+    
+    const response = await apiClient.post(endpoint, payload);
+    
+    console.log('userService.login: Response received:', {
+      hasUser: !!response.data.user,
+      userRole: response.data.user?.role,
+      hasToken: !!response.data.access_token,
+    });
     
     // Store tokens in localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth_token', response.data.access_token);
       localStorage.setItem('refresh_token', response.data.refresh_token);
+      console.log('userService.login: Tokens stored in localStorage');
     }
     
     return response.data;

@@ -19,7 +19,7 @@ export function useBookingDetail(bookingId: string | null, options: UseBookingDe
     mutate,
     isLoading,
     isValidating,
-  } = useSWR<Booking, SWRError>(
+  } = useSWR<{ booking?: Booking } | Booking, SWRError>(
     key,
     fetcher,
     {
@@ -28,8 +28,11 @@ export function useBookingDetail(bookingId: string | null, options: UseBookingDe
     }
   );
 
+  // Extract booking from response (API may return { booking } or just Booking)
+  const booking = (data && 'booking' in data) ? (data as { booking: Booking }).booking : (data as Booking | undefined);
+
   return {
-    booking: data,
+    booking,
     error,
     isLoading,
     isValidating,
@@ -37,17 +40,17 @@ export function useBookingDetail(bookingId: string | null, options: UseBookingDe
     // Helper to refresh data
     refresh: () => mutate(),
     // Helper to check if we have data
-    hasData: !!data,
+    hasData: !!booking,
     // Helper to get booking status
-    isPending: data?.status === 'pending',
-    isConfirmed: data?.status === 'confirmed',
-    isCheckedIn: data?.status === 'checked_in',
-    isCheckedOut: data?.status === 'checked_out',
-    isCancelled: data?.status === 'cancelled',
+    isPending: booking?.status === 'pending',
+    isConfirmed: booking?.status === 'confirmed',
+    isCheckedIn: booking?.status === 'checked_in',
+    isCheckedOut: booking?.status === 'checked_out',
+    isCancelled: booking?.status === 'cancelled',
     // Helper to check payment status
-    isPaid: data ? data.paid_amount >= data.total_amount : false,
-    isPartiallyPaid: data ? data.paid_amount > 0 && data.paid_amount < data.total_amount : false,
-    outstandingAmount: data ? data.total_amount - data.paid_amount : 0,
+    isPaid: booking ? booking.paid_amount >= booking.total_amount : false,
+    isPartiallyPaid: booking ? booking.paid_amount > 0 && booking.paid_amount < booking.total_amount : false,
+    outstandingAmount: booking ? booking.total_amount - booking.paid_amount : 0,
   };
 }
 

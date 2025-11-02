@@ -18,6 +18,17 @@ apiClient.interceptors.request.use(
       const token = localStorage.getItem('auth_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('API Request: Added auth token to headers', {
+          url: config.url,
+          method: config.method,
+          hasToken: !!token,
+          tokenLength: token?.length,
+        });
+      } else {
+        console.warn('API Request: No auth token found in localStorage', {
+          url: config.url,
+          method: config.method,
+        });
       }
     }
     return config;
@@ -31,13 +42,26 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Response Error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method,
+    });
+
     if (error.response?.status === 401) {
       // Handle unauthorized - redirect to login or refresh token
+      console.warn('401 Unauthorized - Clearing auth token');
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
         // You can add redirect logic here
         // window.location.href = '/login';
       }
+    } else if (error.response?.status === 403) {
+      // Handle forbidden
+      console.error('403 Forbidden - User may not have required role or permissions');
     }
     return Promise.reject(error);
   }

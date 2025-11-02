@@ -37,8 +37,16 @@ export const bookingService = {
 
   // Create new booking
   async createBooking(bookingData: CreateBookingPayload): Promise<BookingConfirmation> {
-    const response = await apiClient.post(API_ENDPOINTS.CREATE_BOOKING, bookingData);
-    return response.data;
+    console.log('bookingService.createBooking: Sending request to', API_ENDPOINTS.CREATE_BOOKING);
+    console.log('bookingService.createBooking: Payload:', bookingData);
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_BOOKING, bookingData);
+      console.log('bookingService.createBooking: Response received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('bookingService.createBooking: API call failed:', error);
+      throw error;
+    }
   },
 
   // Update booking
@@ -143,5 +151,10 @@ export const bookingService = {
       }
     );
     return response.data;
+  },
+
+  // Delete booking
+  async deleteBooking(bookingId: string): Promise<void> {
+    await apiClient.delete(API_ENDPOINTS.BOOKING_DETAIL(bookingId));
   },
 }; 

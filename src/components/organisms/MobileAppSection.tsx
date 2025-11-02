@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 
@@ -7,6 +7,7 @@ interface MobileAppSectionProps {
   subtitle: string;
   playstoreText: string;
   appstoreText: string;
+  image?: string;
   className?: string;
 }
 
@@ -15,8 +16,12 @@ const MobileAppSection: React.FC<MobileAppSectionProps> = ({
   subtitle,
   playstoreText,
   appstoreText,
+  image,
   className
 }) => {
+  const [imageError, setImageError] = useState(false);
+  // Default mobile app image if none provided
+  const imageSrc = image ? (image.startsWith('/') ? image : `/${image}`) : '/images/mobile/download.jpg';
   return (
     <section className={className}>
       <div className="container mx-auto px-4">
@@ -41,10 +46,26 @@ const MobileAppSection: React.FC<MobileAppSectionProps> = ({
             </div>
           </div>
 
-          {/* Right Content - Smartphone Icon */}
+          {/* Right Content - Mobile App Image */}
           <div className="flex-1 flex justify-center w-full">
-            <div className="w-full h-64 bg-gray-300 rounded-3xl flex items-center justify-center">
-              <div className="w-16 h-16 bg-gray-400 rounded-full"></div>
+            <div className="w-full max-w-md h-64 bg-gray-300 rounded-3xl overflow-hidden relative border border-gray-200 shadow-md">
+              {!imageError ? (
+                <img
+                  src={imageSrc}
+                  alt="Mobile App"
+                  className="w-full h-full object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <svg className="w-16 h-16 mx-auto text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-gray-500 text-sm">Mobile App</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

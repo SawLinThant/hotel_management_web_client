@@ -100,21 +100,21 @@ export const mockBlogPosts: BlogPost[] = [
     id: '1',
     title: 'Choose the right property!',
     description: 'Learn how to select the perfect property for your needs.',
-    image: '/api/placeholder/300/200',
+    image: 'images/guide/rightproperty.jpg',
     wordCount: 200
   },
   {
     id: '2',
     title: 'Best environment for rental',
     description: 'Discover the best environments for property rental success.',
-    image: '/api/placeholder/300/200',
+    image: 'images/guide/env_for_rental.jpg',
     wordCount: 150
   },
   {
     id: '3',
     title: 'Boys Hostel Apartment',
     description: 'Everything you need to know about hostel accommodations.',
-    image: '/api/placeholder/300/200',
+    image: 'images/guide/boy.jpg',
     wordCount: 100
   }
 ];

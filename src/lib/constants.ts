@@ -19,6 +19,10 @@ export const API_ENDPOINTS = {
   CREATE_BOOKING: '/bookings',
   CANCEL_BOOKING: (id: string) => `/bookings/${id}/cancel`,
   
+  // Stay Record endpoints
+  STAY_RECORDS: '/stay-records',
+  STAY_RECORD_DETAIL: (id: string) => `/stay-records/${id}`,
+  
   // User endpoints
   USER_PROFILE: '/me',
   USERS: '/users',

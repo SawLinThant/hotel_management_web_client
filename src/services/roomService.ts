@@ -37,19 +37,80 @@ export const roomService = {
     return response.data;
   },
 
-  // Create new room
-  async createRoom(roomData: CreateRoomPayload): Promise<Room> {
-    const response = await apiClient.post(API_ENDPOINTS.ROOMS, roomData);
-    return response.data;
+  // Create new room with optional file uploads
+  async createRoom(roomData: CreateRoomPayload, images?: File[]): Promise<Room> {
+    // Always use FormData to be compatible with multer middleware
+    const formData = new FormData();
+    
+    // Append room data fields
+    formData.append('room_number', roomData.room_number);
+    formData.append('type', roomData.type);
+    formData.append('capacity', String(roomData.capacity));
+    formData.append('price_per_night', String(roomData.price_per_night));
+    
+    if (roomData.description) {
+      formData.append('description', roomData.description);
+    }
+    
+    if (roomData.amenities && roomData.amenities.length > 0) {
+      formData.append('amenities', JSON.stringify(roomData.amenities));
+    }
+    
+    if (roomData.floor) {
+      formData.append('floor', String(roomData.floor));
+    }
+    
+    if (roomData.size_sqm) {
+      formData.append('size_sqm', String(roomData.size_sqm));
+    }
+    
+    // Append image files if provided
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
+    }
+    
+    const response = await apiClient.post(API_ENDPOINTS.ROOMS, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    return response.data.room;
   },
 
-  // Update room
-  async updateRoom(roomId: string, roomData: UpdateRoomPayload): Promise<Room> {
-    const response = await apiClient.put(
-      API_ENDPOINTS.ROOM_DETAIL(roomId),
-      roomData
-    );
-    return response.data;
+  // Update room with optional file uploads
+  async updateRoom(roomId: string, roomData: UpdateRoomPayload, images?: File[]): Promise<Room> {
+    // Always use FormData to be compatible with multer middleware
+    const formData = new FormData();
+    
+    // Append room data fields
+    if (roomData.type !== undefined) formData.append('type', roomData.type);
+    if (roomData.status !== undefined) formData.append('status', roomData.status);
+    if (roomData.capacity !== undefined) formData.append('capacity', String(roomData.capacity));
+    if (roomData.price_per_night !== undefined) formData.append('price_per_night', String(roomData.price_per_night));
+    if (roomData.description !== undefined) formData.append('description', roomData.description);
+    if (roomData.amenities !== undefined && roomData.amenities.length > 0) {
+      formData.append('amenities', JSON.stringify(roomData.amenities));
+    }
+    if (roomData.floor !== undefined) formData.append('floor', String(roomData.floor));
+    if (roomData.size_sqm !== undefined) formData.append('size_sqm', String(roomData.size_sqm));
+    
+    // Append image files if provided
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
+    }
+    
+    const response = await apiClient.put(API_ENDPOINTS.ROOM_DETAIL(roomId), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    return response.data.room;
   },
 
   // Delete room
@@ -84,8 +145,8 @@ export const roomService = {
   // Upload room images
   async uploadImages(roomId: string, images: File[]): Promise<string[]> {
     const formData = new FormData();
-    images.forEach((image, index) => {
-      formData.append(`images[${index}]`, image);
+    images.forEach((image) => {
+      formData.append('images', image);
     });
 
     const response = await apiClient.post(

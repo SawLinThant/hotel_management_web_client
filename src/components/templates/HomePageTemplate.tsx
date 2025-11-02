@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import HeroSection from '@/components/organisms/HeroSection';
 import PropertySection from '@/components/organisms/PropertySection';
@@ -8,24 +10,58 @@ import MobileAppSection from '@/components/organisms/MobileAppSection';
 import AboutSection from '@/components/organisms/AboutSection';
 import NewsletterSection from '@/components/organisms/NewsletterSection';
 import Footer from '@/components/organisms/Footer';
-import { 
-  getLatestProperties, 
-  getNearbyProperties, 
-  getTopRatedProperties, 
-  getFeaturedProperties, 
-  getBlogPosts 
-} from '@/lib/mockData';
+import { useRooms } from '@/hooks/useRooms';
+import { convertRoomsToProperties } from '@/lib/roomToProperty';
+import { getBlogPosts } from '@/lib/mockData';
 
 interface HomePageTemplateProps {
   dict: any;
 }
 
 const HomePageTemplate: React.FC<HomePageTemplateProps> = ({ dict }) => {
-  // Get mock data
-  const latestProperties = getLatestProperties();
-  const nearbyProperties = getNearbyProperties();
-  const topRatedProperties = getTopRatedProperties();
-  const featuredProperties = getFeaturedProperties();
+  // Fetch real room data with different filters
+  const { rooms: allRooms, isLoading: isLoadingAll } = useRooms({ 
+    query: { 
+      page: 1, 
+      limit: 20,
+      status: 'available' // Only show available rooms
+    } 
+  });
+
+  const { rooms: singleRooms } = useRooms({ 
+    query: { 
+      page: 1, 
+      limit: 4,
+      type: 'single',
+      status: 'available'
+    } 
+  });
+
+  const { rooms: capacity2Rooms } = useRooms({ 
+    query: { 
+      page: 1, 
+      limit: 4,
+      min_capacity: 2,
+      max_capacity: 2,
+      status: 'available'
+    } 
+  });
+
+  const { rooms: suiteRooms } = useRooms({ 
+    query: { 
+      page: 1, 
+      limit: 4,
+      type: 'suite',
+      status: 'available'
+    } 
+  });
+
+  // Convert rooms to properties
+  const latestProperties = convertRoomsToProperties(allRooms.slice(0, 4));
+  const nearbyProperties = convertRoomsToProperties(capacity2Rooms.slice(0, 4));
+  const topRatedProperties = convertRoomsToProperties(suiteRooms.slice(0, 4));
+  const featuredProperties = convertRoomsToProperties(allRooms.filter(r => r.images && r.images.length > 0).slice(0, 8));
+  
   const blogPosts = getBlogPosts();
 
   return (
@@ -37,23 +73,34 @@ const HomePageTemplate: React.FC<HomePageTemplateProps> = ({ dict }) => {
       <PropertySection
         title={dict.home.sections.latest_properties}
         properties={latestProperties}
+        showPrice={true}
         className="py-16"
       />
 
-      {/* Nearby Properties */}
+      {/* Single Rooms */}
       <PropertySection
-        title={dict.home.sections.nearby_properties}
-        properties={nearbyProperties}
-        showMapLink={true}
+        title="Single Rooms"
+        properties={convertRoomsToProperties(singleRooms)}
+        showPrice={true}
         className="py-16 bg-gray-50"
       />
 
-      {/* Top Rated Properties */}
+      {/* 2 Capacity Rooms */}
+      <PropertySection
+        title="2 Guest Capacity Rooms"
+        properties={convertRoomsToProperties(capacity2Rooms)}
+        showPrice={true}
+        showMapLink={true}
+        className="py-16"
+      />
+
+      {/* Top Rated Properties (Suite Rooms) */}
       <PropertySection
         title={dict.home.sections.top_rated_properties}
-        properties={topRatedProperties}
+        properties={convertRoomsToProperties(suiteRooms)}
+        showPrice={true}
         showRating={true}
-        className="py-16"
+        className="py-16 bg-gray-50"
       />
 
       {/* Try Hosting Banner */}

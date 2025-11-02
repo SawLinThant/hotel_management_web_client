@@ -20,9 +20,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     <div className={cn('bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow', className)}>
       {/* Image Container */}
       <div className="relative">
-        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-          <div className="w-16 h-16 bg-gray-300 rounded-full"></div>
-        </div>
+        {property.images && property.images.length > 0 ? (
+          <img
+            src={property.images[0]}
+            alt={property.title}
+            className="w-full h-48 object-cover"
+            onError={(e) => {
+              // Fallback to placeholder if image fails
+              const target = e.target as HTMLImageElement;
+              target.src = '/api/placeholder/400/300';
+            }}
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <div className="w-16 h-16 bg-gray-300 rounded-full"></div>
+          </div>
+        )}
         
         {/* Heart Icon */}
         <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
